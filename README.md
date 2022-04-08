@@ -3,7 +3,7 @@
   - +English study ( 2022-03-28 ~ )
   - most 2021-2 data is deleted.
 
-# Compiler option
+# Program version
   - python version: 3.9.5
   - cuda version: 11.5
   - cudnn version: 8.2.4
