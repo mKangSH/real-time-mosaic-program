@@ -1,6 +1,6 @@
 # Tensorflow study and mosaic project
 
-+ English study ( 2022-03-28 ~ )
+  - +English study ( 2022-03-28 ~ )
 
 # Reference
 
