@@ -3,7 +3,8 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
-path_dir = 'C:/Users/ksh/Desktop/ML/real-time-mosaic-program/2022-1/data'
+#write your path_dir
+path_dir = '/real-time-mosaic-program/2022-1/data'
 
 tensor = [0, 1, 2, 3, 4]
 
