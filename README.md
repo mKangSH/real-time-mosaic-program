@@ -1,6 +1,7 @@
 # Tensorflow study and mosaic project
 
   - +English study ( 2022-03-28 ~ )
+  - most 2021-2 data is deleted.
 
 # Reference
 
