@@ -44,7 +44,7 @@ print('validation set accuracy: ', test_acc)
 
 # image load
 # write your path_dir
-path_dir = 'C:/Users/ksh/Desktop/ML/real-time-mosaic-program/2022-1/data/Mnist'
+path_dir = '/real-time-mosaic-program/2022-1/data/Mnist'
 tensor = [0, 1, 2, 3, 4]
 
 for i in range(5):
