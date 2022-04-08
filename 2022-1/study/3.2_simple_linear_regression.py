@@ -25,7 +25,7 @@ history = model.fit(x, y, epochs=1200, verbose = 0)
 print(model.evaluate(x, y))
 
 tensor1 = model.predict([30])
-print(np.array(tensor1))
+print(tensor1)
 
 
 
