@@ -1,6 +1,6 @@
 # Tensorflow study and mosaic project
 
-Perfect imperfection ( 2022-03-28 ~ )
+( 2022-03-28 ~ )
 
 # Reference
 
