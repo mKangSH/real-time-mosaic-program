@@ -28,7 +28,7 @@ src = []
 name = []
 test = []
 #image_dir = "C:/"
-image_dir = "D:/workingFolder/Tensor/cnn_sample/people/"
+image_dir = "D:/"
 
 for file in os.listdir(image_dir):
     if (file.find(".jfif") is not -1):      
