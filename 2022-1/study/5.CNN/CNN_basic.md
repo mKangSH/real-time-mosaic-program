@@ -26,7 +26,7 @@ Size of feature map
  - Width of feature map
 <img src="https://latex.codecogs.com/svg.image?{\color{Teal}&space;x=\frac{ImageWidth&plus;(2*Padding)-KernelWidth}{Strides}&plus;1}" title="y=\frac{ImageWidth+(2xPadding) - KernelWidth}{Strides}+1}" />
 
- - total size: (x, y)
+ - (Output Height, Output Width) = (x, y)
 
 _Channel_
  - Counts of 2-dimensional array.
