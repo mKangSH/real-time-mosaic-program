@@ -9,10 +9,10 @@ ex) When extracting feature map to 5x5 shape input image using 3x3 filter.
 
 ![convolution example img](https://github.com/mKangSH/real-time-mosaic-program/blob/main/2022-1/data/Convolution%20example.JPG)
 
-Channel
+_Channel_
  - Counts of 2-dimensional array.
 
-multi-channel convolution process
+Multi-channel convolution process
  1. Create as many kernels as the number of channels.
  2. Convolution operation for each channel.
  3. Element-wise add operation for result of convolution. (feature map)
@@ -22,3 +22,8 @@ The number of gradient of weights to update on one layer
  - Counts of bias are same to the number of output filter.
  - ex) (filter size).(3 x 3) x (the number of RGB channel).(3) x (the number of output filter).(9) + (biases).(9) = 243 
 
+_Stride_
+ - Moving interval of the kernel (in pixels).
+ - Usually set to 1 or 2 value.
+
+_Padding_
