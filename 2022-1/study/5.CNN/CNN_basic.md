@@ -18,5 +18,7 @@ multi-channel convolution process
  3. Element-wise add operation for result of convolution. (feature map)
 
 The number of gradient of weights to update on one layer
- - result of multiplying the kernel size, the number of input channel and the number of output filter.
- - ex) (filter size).(3 x 3) x (the number of RGB channel).(3) x (the number of output filter).(9) = 243
+ - Result of multiplying the kernel size, the number of input channel and the number of output filter + biases.
+ - Counts of bias are same to the number of output filter.
+ - ex) (filter size).(3 x 3) x (the number of RGB channel).(3) x (the number of output filter).(9) + (biases).(9) = 243 
+
