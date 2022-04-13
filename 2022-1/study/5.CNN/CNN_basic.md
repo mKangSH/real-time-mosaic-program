@@ -19,4 +19,4 @@ multi-channel convolution process
 
 The number of gradient of weights to update on one layer
  - result of multiplying the kernel size, the number of input channel and the number of output filter.
- - ex) (filter size).(3 x 3) x (the number of RGB channel).(3x3) x (the number of output filter).(20) = 540
+ - ex) (filter size).(3 x 3) x (the number of RGB channel).(3) x (the number of output filter).(9) = 243
