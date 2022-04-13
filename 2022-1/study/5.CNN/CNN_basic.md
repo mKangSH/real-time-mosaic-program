@@ -27,7 +27,6 @@ _Stride_
  - Usually set to 1 or 2 value.
 
 _Padding_
-Filling the edges with padding values.
-
-Support to maintain size of feature map relative to input image.
+ - Filling the edges with padding values.
+ - Support to maintain size of feature map relative to input image.
 
