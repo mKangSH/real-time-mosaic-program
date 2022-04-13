@@ -20,7 +20,7 @@ Multi-channel convolution process
 The number of gradient of weights to update on one layer
  - Result of multiplying the kernel size, the number of input channel and the number of output filter + biases.
  - Counts of bias are same to the number of output filter.
- - ex) (filter size).(3 x 3) x (the number of RGB channel).(3) x (the number of output filter).(9) + (biases).(9) = 243 
+ - ex) (filter size).(3 x 3) x (the number of RGB channel).(3) x (the number of output filter).(9) + (biases).(9) = 252
 
 _Stride_
  - Moving interval of the kernel (in pixels).
