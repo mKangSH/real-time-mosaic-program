@@ -21,8 +21,10 @@ The number of gradient of weights to update on one layer
 
 Size of feature map
  - $\frac{ImageHeight+(2*Padding)-KernelHeight+1}{Strides}$
- - <img src="https://latex.codecogs.com/svg.latex?\Large&space;HeightofFeatureMap=\frac{ImageHeight+(2*Padding)-KernelHeight}{Strides} + 1" title="\Large x=\frac{ImageHeight+(2*Padding)-KernelHeight}{Strides} + 1" />
+ - ![\Large Height=\frac{ImageHeight+(2*Padding)-KernelHeight}{Strides} + 1](http://latex.codecogs.com/gif.latex?Concentration%3D%5Cfrac%7BTotalTemplate%7D%7BTotalVolume%7D)
  - ![\Large Height=\frac{ImageHeight+(2*Padding)-KernelHeight}{Strides} + 1](https://latex.codecogs.com/svg.latex?x%3D%5Cfrac%7B-b%5Cpm%5Csqrt%7Bb%5E2-4ac%7D%7D%7B2a%7D)
+ - \Large&space;Height=\frac{ImageHeight+(2*Padding)-KernelHeight}{Strides} + 1}
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;Height=\frac{ImageHeight+(2*Padding)-KernelHeight}{Strides} + 1}" title="\Large xHeight=\frac{ImageHeight+(2*Padding)-KernelHeight}{Strides} + 1" />  
 
 _Channel_
  - Counts of 2-dimensional array.
