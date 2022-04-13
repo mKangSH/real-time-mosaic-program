@@ -9,6 +9,10 @@
   - cudnn version: 8.2.4
   - tensorflow version: 2.7.0
 
+# contents
+
+3. [ML_basic]() 
+4. [Keras_basic]()
 # Reference
 
 오승환 외 3인, 『파이썬 딥러닝 텐서플로』, 정보문화사(2021)
