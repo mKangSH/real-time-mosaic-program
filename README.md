@@ -9,7 +9,7 @@
   - cudnn version: 8.2.4
   - tensorflow version: 2.7.0
 
-# contents
+# Contents
 
 3. [ML_basic](https://github.com/mKangSH/real-time-mosaic-program/blob/main/2022-1/study/3.ML_basic/3.ML_basic.md) 
 4. [Keras_basic](https://github.com/mKangSH/real-time-mosaic-program/blob/main/2022-1/study/4.keras_basic/4.keras_basic.md)
