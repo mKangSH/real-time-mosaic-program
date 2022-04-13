@@ -39,3 +39,6 @@ _Padding_
  - Filling the edges with padding values.
  - Support to maintain size of feature map relative to input image.
 
+_Pooling_
+ - (_editing_)
+
