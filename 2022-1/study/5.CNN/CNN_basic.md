@@ -21,10 +21,10 @@ The number of gradient of weights to update on one layer
 
 Size of feature map
  - Height of feature map
-<img src="https://latex.codecogs.com/svg.latex?&space;x=\frac{ImageHeight+(2*Padding)-KernelHeight}{Strides}+1" title="x=\frac{ImageHeight+(2*Padding)-KernelHeight}{Strides}+1" />
+<img src="https://latex.codecogs.com/svg.latex?\;{\color{Teal} x=\frac{ImageHeight+(2*Padding)-KernelHeight}{Strides}+1}" title="{\color{Teal} x=\frac{ImageHeight+(2*Padding)-KernelHeight}{Strides}+1}" />
 
  - Width of feature map
-<img src="https://latex.codecogs.com/svg.latex?&space;y=\frac{ImageWidth+(2*Padding)-KernelWidth}{Strides}+1" title="y=\frac{ImageWidth+(2*Padding)-KernelWidth}{Strides}+1" />
+<img src="https://latex.codecogs.com/svg.latex?\;{\color{Teal} y=\frac{ImageWidth+(2*Padding)-KernelWidth}{Strides}+1}" title="y=\frac{ImageWidth+(2*Padding)-KernelWidth}{Strides}+1}" />
 
  - total size: (x, y)
 
