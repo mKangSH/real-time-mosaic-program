@@ -65,7 +65,7 @@ print(model.output)
 
 from tensorflow.python.keras.utils.vis_utils import plot_model
 plot_model(model, show_shapes=True, show_layer_names=True, to_file='functional_cnn.png')
-
+'''
 model.compile(optimizer='adam', 
               loss={'digit_dense':'sparse_categorical_crossentropy', 'odd_dense':'binary_crossentropy'},
               loss_weights={'digit_dense':1, 'odd_dense': 0.5},
@@ -76,7 +76,7 @@ history = model.fit({'inputs': x_train_in},{'digit_dense':y_train, 'odd_dense':y
                      validation_data=({'inputs':x_valid_in}, {'digit_dense':y_valid, 'odd_dense':y_valid_odd}), epochs=10)
 
 model.evaluate({'inputs':x_valid_in}, {'digit_dense':y_valid, 'odd_dense':y_valid_odd})
-
+'''
 import matplotlib.pyplot as plt
 
 def plot_image(data, idx):
@@ -85,15 +85,58 @@ def plot_image(data, idx):
     plt.axis("off")
     plt.show()
 
-plot_image(x_valid, 0)
+# plot_image(x_valid, 0)
 
-digit_preds, odd_preds = model.predict(x_valid_in)
+# digit_preds, odd_preds = model.predict(x_valid_in)
 
-print(digit_preds[0])
-print(odd_preds[0])
+# print(digit_preds[0])
+# print(odd_preds[0])
 
-digit_labels = np.argmax(digit_preds, axis=-1)
-print(digit_labels[0:10])
+# digit_labels = np.argmax(digit_preds, axis=-1)
+# print(digit_labels[0:10])
 
 # odd_labels = (odd_preds > 0.5).astype(np.int).reshape(1, -1)[0]
 # print(odd_labels[0:10])
+
+base_model_output = model.get_layer('flatten_layer').output
+
+base_model = tf.keras.models.Model(inputs=model.input, outputs=base_model_output, name='base')
+# base_model.summary()
+
+plot_model(base_model, show_shapes=True, show_layer_names=True, to_file='base_model.png')
+
+transfer_model = tf.keras.Sequential([
+                 base_model,
+                 tf.keras.layers.Dense(10, activation='softmax')
+])
+
+transfer_model.summary()
+# plot_model(transfer_model, show_shapes=True, show_layer_names=True, to_file='transfer_model.png')
+
+transfer_model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+history = transfer_model.fit(x_train_in, y_train, validation_data=(x_valid_in, y_valid), epochs=10)
+
+base_model_frozen = tf.keras.models.Model(inputs=model.input, outputs=base_model_output, name='base_frozen')
+base_model_frozen.trainable = False
+# base_model_frozen.summary()
+dense_output = tf.keras.layers.Dense(10, activation='softmax')(base_model_frozen.output)
+
+digit_model_frozen = tf.keras.models.Model(inputs=base_model_frozen.input, outputs=dense_output)
+digit_model_frozen.summary()
+
+digit_model_frozen.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+history = digit_model_frozen.fit(x_train_in, y_train, validation_data=(x_valid_in, y_valid), epochs=10)
+
+base_model_frozen2 = tf.keras.models.Model(inputs=model.input, outputs=base_model_output, name='base_frozen2')
+base_model_frozen2.get_layer('conv2d_layer').trainable = False
+base_model_frozen2.summary()
+
+dense_output2 = tf.keras.layers.Dense(10, activation='softmax')(base_model_frozen2.output)
+
+digit_model_frozen2 = tf.keras.models.Model(inputs=base_model_frozen2.input, outputs=dense_output2)
+digit_model_frozen2.summary()
+
+digit_model_frozen2.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+history=digit_model_frozen2.fit(x_train_in, y_train, validation_data=(x_valid_in, y_valid), epochs=10)

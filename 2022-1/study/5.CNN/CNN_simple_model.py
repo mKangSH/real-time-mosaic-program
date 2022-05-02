@@ -99,4 +99,3 @@ pooling_activation = activations[1]
 print(pooling_activation.shape)
 
 show_graph(32, pooling_activation)
-
