@@ -34,14 +34,13 @@ def preprocess_data(image, label):
     image = tf.cast(image, tf.float32) / 255.
     return image, label
 
-train_data = train_ds.map(preprocess_data, num_parallel_calls=tf.data.AUTOTUNE)
-valid_data = valid_ds.map(preprocess_data, num_parallel_calls=tf.data.AUTOTUNE)
+#train_data = train_ds.map(preprocess_data, num_parallel_calls=tf.data.AUTOTUNE)
+#valid_data = valid_ds.map(preprocess_data, num_parallel_calls=tf.data.AUTOTUNE)
 
-train_data = train_data.shuffle(BUFFER_SIZE).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
-valid_data = valid_data.batch(BATCH_SIZE).cache().prefetch(tf.data.AUTOTUNE)
+#train_data = train_data.shuffle(BUFFER_SIZE).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+#valid_data = valid_data.batch(BATCH_SIZE).cache().prefetch(tf.data.AUTOTUNE)
 
 # Create sample model
-
 def build_model():
     model = tf.keras.Sequential([
 
@@ -64,11 +63,9 @@ def build_model():
 
     return model
 
-model = build_model()
-
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-
-history = model.fit(train_data, validation_data=valid_data, epochs=50)
+# model = build_model()
+# model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+# history = model.fit(train_data, validation_data=valid_data, epochs=50)
 
 def plot_loss_acc(history, epoch):
     loss, val_loss = history.history['loss'], history.history['val_loss']
@@ -88,4 +85,55 @@ def plot_loss_acc(history, epoch):
 
     plt.show()
 
-plot_loss_acc(history, 50)
+# plot_loss_acc(history, 50)
+
+#image_batch, label_batch = next(iter(train_data.take(1))) # select 1 image.
+
+#image = image_batch[0]
+#label = label_batch[0].numpy()
+
+# plt.imshow(image)
+# plt.title(info.features["label"].int2str(label))
+
+def plot_augmentation(original, augmented):
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+    axes[0].imshow(original)
+    axes[0].set_title('Original')
+
+    axes[1].imshow(augmented)
+    axes[1].set_title('Augmented')
+
+    plt.show()
+
+#lr_flip = tf.image.flip_left_right(image)
+# tf.image.flip_up_down(image)
+# etc..
+
+# image preprocess
+def data_augmentation(image, label):
+    image = tf.image.random_flip_left_right(image)
+    image = tf.image.random_flip_up_down(image)
+    image = tf.image.random_brightness(image, max_delta=0.3)
+    image = tf.image.random_crop(image, size=[64, 64, 3])
+
+    image = tf.cast(image, tf.float32) / 255.
+
+    return image, label
+
+train_aug = train_ds.map(data_augmentation, num_parallel_calls=tf.data.AUTOTUNE)
+valid_aug = valid_ds.map(data_augmentation, num_parallel_calls=tf.data.AUTOTUNE)
+
+train_aug = train_aug.shuffle(BUFFER_SIZE).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+valid_aug = valid_aug.batch(BATCH_SIZE).cache().prefetch(tf.data.AUTOTUNE)
+
+print(train_aug)
+print(valid_aug)
+
+aug_model = build_model()
+
+aug_model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+aug_history = aug_model.fit(train_aug, validation_data=valid_aug, epochs=50)
+plot_loss_acc(aug_history, 50)
