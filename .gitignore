@@ -6,4 +6,20 @@ tmp_checkpoint.ckpt.data-00000-of-00001
 
 tmp_checkpoint.ckpt.index
 
+img_data.npy
+
+kang.h5
+
 tensorboard/
+
+2022-1/data/
+
+faceData/
+
+frozen_models/
+
+0.png
+
+1.png
+
+2.png
