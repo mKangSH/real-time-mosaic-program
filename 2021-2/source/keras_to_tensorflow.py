@@ -4,7 +4,6 @@ import tensorflow as tf
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2
 import numpy as np
 
-
 model = keras.models.load_model('./kang.h5')
 
 # Convert Keras model to ConcreteFunction

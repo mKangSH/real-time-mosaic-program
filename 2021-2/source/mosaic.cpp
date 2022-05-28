@@ -7,90 +7,65 @@ using namespace cv::dnn;
 
 #define WEBCAM 0
 
-int mx1, my1, mx2, my2;
-
 Mat videoFrame;
-VideoCapture videoCapture(WEBCAM);
-VideoWriter videoWriter, videoWriter1, videoWriter2;
-vector<Mat> bgrPlanes;
-float videoFPS;
-int videoWidth, videoHeight;
-int histSize = 256;
-float range[] = { 0, 256 };
-const float* histRange = { range };
-bool uniform = true, accumulate = false;
-Mat bHist, gHist, rHist, equalizedFrame, grayFrame;
 
 const String model = "res10_300x300_ssd_iter_140000_fp16.caffemodel";
 const String config = "deploy.prototxt";
 
+const String clModel = "simple_frozen_graph.pb";
+const String clConfig = "simple_frozen_graph.pbtxt";
+
 void bgrHistMonitor();
 vector<Rect> harrFaceClassification(Mat& src, CascadeClassifier& face_classifier);
-void dnnFaceClassification(Mat& src, Net& net);
+vector<Rect> dnnFaceDetection(Mat& src, Net& net);
+int dnnFaceClassification(Mat src, Net& net);
 void mosaic(Mat& src, vector<Rect>& faces);
 void mosaicProcess(Mat& image, vector<Rect>& face);
 
-CascadeClassifier face_classifier; // 비올라-존스 알고리즘 클래스
-CascadeClassifier front_face_classifier;
 Net net = readNetFromCaffe(config, model);
+Net net2 = readNetFromTensorflow(clModel);
 
 void imgSave(int event, int x, int y, int flags, void* param)
 {
-	vector<Rect> profile;
-	vector<Rect> frontFace;
 	if (event == EVENT_LBUTTONDOWN)
 	{
-		Mat test, test1, test2;
+		Mat test;
 
 		test = imread("D:/test1.jpg", IMREAD_COLOR);
-		test1 = test.clone();
-		test2 = test.clone();
 
-		dnnFaceClassification(test, net);
-		profile = harrFaceClassification(test1, face_classifier);
-		frontFace = harrFaceClassification(test2, front_face_classifier);
-
-		mosaicProcess(test1, profile);
-		mosaicProcess(test2, frontFace);
+		dnnFaceDetection(test, net);
 
 		imshow("dnntest", test);
-		imshow("harr side test", test1);
-		imshow("harr front test", test2);
 	}
-	
+
 	else if (event == EVENT_RBUTTONDOWN) {}
 	else if (event == EVENT_MBUTTONDOWN) {}
-	
+
 }
 
 int main(int argc, char** argv)
 {
-	vector<Rect> profile;
-	vector<Rect> frontFace, dnn;
-	Mat haarVideoFrameSide, haarVideoFrameFront;
-	
+	int videoWidth, videoHeight;
+	float videoFPS;
+	vector<Rect> dnn;
+	int result = 0;
+
+	VideoWriter videoWriter;
+	VideoCapture videoCapture(WEBCAM);
+
 	videoFPS = videoCapture.get(CAP_PROP_FPS);
 	videoWidth = videoCapture.get(CAP_PROP_FRAME_WIDTH);
 	videoHeight = videoCapture.get(CAP_PROP_FRAME_HEIGHT);
 
+	/*
 	videoWriter.open("saveData.avi", VideoWriter::fourcc('M', 'J', 'P', 'G'), videoFPS, Size(videoWidth, videoHeight), true);
-	videoWriter1.open("saveData1.avi", VideoWriter::fourcc('M', 'J', 'P', 'G'), videoFPS, Size(videoWidth, videoHeight), true);
-	videoWriter2.open("saveData2.avi", VideoWriter::fourcc('M', 'J', 'P', 'G'), videoFPS, Size(videoWidth, videoHeight), true);
 
 	if (!videoWriter.isOpened())
 	{
 		cout << "Can't write video" << endl;
 		return -1;
 	}
-
-	face_classifier.load("D:/openCV-4.5.3/etc/haarcascades/haarcascade_profileface.xml");
-	front_face_classifier.load("D:/openCV-4.5.3/etc/haarcascades/haarcascade_frontalface_default.xml");
-
-	if (face_classifier.empty() || front_face_classifier.empty())
-	{
-		cout << "xml load error" << endl;
-		return -1;
-	}
+	*/
 
 	if (!videoCapture.isOpened())
 	{
@@ -99,13 +74,10 @@ int main(int argc, char** argv)
 	}
 
 	namedWindow("dnn", 1);
-	setMouseCallback("dnn", imgSave, &videoFrame);
 
 	while (1)
 	{
 		videoCapture >> videoFrame;
-		haarVideoFrameFront = videoFrame.clone();
-		haarVideoFrameSide = videoFrame.clone();
 
 		if (videoFrame.empty())
 		{
@@ -113,32 +85,32 @@ int main(int argc, char** argv)
 			break;
 		}
 
-		dnnFaceClassification(videoFrame, net);
-		profile = harrFaceClassification(haarVideoFrameSide, face_classifier);
-		frontFace = harrFaceClassification(haarVideoFrameFront, front_face_classifier);
-		
-		mosaicProcess(haarVideoFrameSide, profile);
-		mosaicProcess(haarVideoFrameFront, frontFace);
+		dnn = dnnFaceDetection(videoFrame, net);
+
+		mosaicProcess(videoFrame, dnn);
 
 		imshow("dnn", videoFrame);
-		imshow("haar filter", haarVideoFrameFront);
-		imshow("haar filter2", haarVideoFrameSide);
 
-		videoWriter << videoFrame;
-		videoWriter1 << haarVideoFrameFront;
-		videoWriter2 << haarVideoFrameSide;
+		// videoWriter << videoFrame;
 
 		if (waitKey(1) == 27) break;
 	}
 
 	destroyWindow("dnn");
-	destroyWindow("haar filter");
 
 	return 0;
 }
 
 void bgrHistMonitor()
 {
+	Mat bHist, gHist, rHist;
+	bool uniform = true;
+	int histSize = 256;
+
+	float range[] = { 0, 256 };
+	const float* histRange = { range };
+	vector<Mat> bgrPlanes;
+
 	split(videoFrame, bgrPlanes);
 	calcHist(&bgrPlanes[0], 1, 0, Mat(), bHist, 1, &histSize, &histRange, uniform, false);
 	calcHist(&bgrPlanes[1], 1, 0, Mat(), gHist, 1, &histSize, &histRange, uniform, false);
@@ -201,7 +173,7 @@ vector<Rect> harrFaceClassification(Mat& src, CascadeClassifier& face_classifier
 	return faces;
 }
 
-void dnnFaceClassification(Mat& src, Net& net)
+vector<Rect> dnnFaceDetection(Mat& src, Net& net)
 {
 	Mat blob = blobFromImage(src, 1, Size(300, 300), Scalar(104, 177, 123));
 	net.setInput(blob);
@@ -226,14 +198,15 @@ void dnnFaceClassification(Mat& src, Net& net)
 		//String label = format("Face: %4.3f", confidence);
 		//putText(src, label, Point(x1, y1 - 1), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0));
 	}
-	mosaicProcess(src, faces);
+
+	return faces;
 }
 
 void mosaic(Mat& src, vector<Rect>& faces)
 {
 	Mat src_mosaic;
 
-	for (int i = 0; i < faces.size(); i++) 
+	for (int i = 0; i < faces.size(); i++)
 	{
 		Point lb(faces[i].x + faces[i].width, faces[i].y + faces[i].height);
 
@@ -249,7 +222,7 @@ void mosaic(Mat& src, vector<Rect>& faces)
 	}
 }
 
-void mosaicProcess(Mat& image, vector<Rect>& face)
+void mosaicProcess(Mat& image, vector<Rect>& faces)
 {
 	int cnts = 0;
 	int mb = 9;
@@ -260,16 +233,22 @@ void mosaicProcess(Mat& image, vector<Rect>& face)
 	double R = 0;
 	double G = 0;
 	double B = 0;
-	for (int faceCount = 0; faceCount < face.size(); faceCount++)
+	for (int faceCount = 0; faceCount < faces.size(); faceCount++)
 	{
-		for (int i = 0; i < face[faceCount].height / mb; i++) {
-			for (int j = 0; j < face[faceCount].width / mb; j++) {
+		if (dnnFaceClassification(image(Range(faces[faceCount].y, faces[faceCount].y + faces[faceCount].height),
+			Range(faces[faceCount].x, faces[faceCount].x + faces[faceCount].width)), net2) == 2)
+		{
+			continue;
+		}
+
+		for (int i = 0; i < faces[faceCount].height / mb; i++) {
+			for (int j = 0; j < faces[faceCount].width / mb; j++) {
 				cnts = 0;
 				B = 0;
 				G = 0;
 				R = 0;
-				xStartPoint = face[faceCount].x + (j * mb);
-				yStartPoint = face[faceCount].y + (i * mb);
+				xStartPoint = faces[faceCount].x + (j * mb);
+				yStartPoint = faces[faceCount].y + (i * mb);
 
 				// 이미지의 픽셀 값의 r, g, b 값의 각각 합을 구함
 				for (int mbY = yStartPoint; mbY < yStartPoint + mb; mbY++) {
@@ -315,6 +294,29 @@ void mosaicProcess(Mat& image, vector<Rect>& face)
 				);
 			}
 		}
+	}
+}
+
+int dnnFaceClassification(Mat src, Net& net)
+{
+	Mat blob = blobFromImage(src, 1 / 255.f, Size(300, 300));
+	net.setInput(blob);
+	Mat res = net.forward();
+
+	cout << res << endl;
+
+	if (res.at<float>(0, 0) > 0.5)
+	{
+		cout << "jmk" << endl;
+		cout << res.at<float>(0, 0) << endl;
+		return 1;
+	}
+
+	else
+	{
+		cout << "ksh" << endl;
+		cout << res.at<float>(0, 0) << endl;
+		return 2;
 	}
 }
 

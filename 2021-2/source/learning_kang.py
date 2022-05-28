@@ -13,15 +13,15 @@ import matplotlib.pyplot as plt
 from tensorflow.python.keras.layers.core import Activation
 from tensorflow.keras import layers
 
-groups_folder_path = './cnn_sample/'
-categories = ["kang", "people"]
+groups_folder_path = 'C:/'
+categories = ["jmk", "ksh"]
 num_classes = len(categories)
 
 train_images, test_images, train_labels, test_labels = np.load('./img_data.npy', allow_pickle=True)
 
 np.random.seed(1234)
 index_list = np.arange(0, len(train_labels))
-valid_index = np.random.choice(index_list, size = 800, replace = False)
+valid_index = np.random.choice(index_list, size = 10, replace = False)
 
 valid_images = train_images[valid_index]
 valid_labels = train_labels[valid_index]
@@ -53,32 +53,76 @@ model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='softmax'))
 
+"""
+from tensorflow.keras.applications import ResNet50V2
+
+pre_trained_base = ResNet50V2(include_top=False,
+                              weights='imagenet',
+                              input_shape=train_images.shape[1:])
+
+pre_trained_base.trainable = False
+
+def build_transfer_classifier():
+    model = tf.keras.Sequential([
+            pre_trained_base,
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(128, activation='relu'),
+            tf.keras.layers.Dropout(0.3),
+            tf.keras.layers.Dense(64, activation='relu'),
+            tf.keras.layers.Dropout(0.3),
+            tf.keras.layers.Dense(NUM_CLASSES, activation='softmax')
+    ])
+
+    return model
+
+tc_model = build_transfer_classifier()
+tc_model.summary()
+
+def build_model():
+    model = tf.keras.Sequential([
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Conv2D(32,(3, 3), padding='same', activation='relu'),
+            tf.keras.layers.MaxPooling2D((2, 2)),
+
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+            tf.keras.layers.MaxPooling2D((2, 2)),
+
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(128, activation='relu'),
+            tf.keras.layers.Dropout(0.3),
+            tf.keras.layers.Dense(64, activation='relu'),
+            tf.keras.layers.Dropout(0.3),
+            tf.keras.layers.Dense(NUM_CLASSES, activation='softmax')
+    ])
+
+    return model
+"""
+
 opt = keras.optimizers.Adam(learning_rate=0.005)
 model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
 
-early_stop = keras.callbacks.EarlyStopping(monitor="val_loss", min_delta=0, patience=10, restore_best_weights=True)
-history = model.fit(train_images, train_labels, batch_size=32, epochs=100, validation_data=(valid_images, valid_labels))
+earlystopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)
+history = model.fit(train_images, train_labels, epochs=20, validation_data=(valid_images, valid_labels))
 
-acc = history.history['accuracy']
-val_acc = history.history['val_accuracy']
+def plot_loss_acc(history, epoch):
+    loss, val_loss = history.history['loss'], history.history['val_loss']
+    acc, val_acc = history.history['accuracy'], history.history['val_accuracy']
 
-loss=history.history['loss']
-val_loss=history.history['val_loss']
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 
-epochs_range = range(100)
+    axes[0].plot(range(1, epoch + 1), loss, label='.Training')
+    axes[0].plot(range(1, epoch + 1), val_loss, label='.Validation')
+    axes[0].legend(loc='best')
+    axes[0].set_title('Loss')
 
-plt.figure(figsize=(8, 8))
-plt.subplot(1, 2, 1)
-plt.plot(epochs_range, acc, label='Training Accuracy')
-plt.plot(epochs_range, val_acc, label='Validation Accuracy')
-plt.legend(loc='lower right')
-plt.title('Training and Validation Accuracy')
+    axes[1].plot(range(1, epoch + 1), acc, label='.Training')
+    axes[1].plot(range(1, epoch + 1), val_acc, label='.Validation')
+    axes[1].legend(loc='best')
+    axes[1].set_title('Accuracy')
 
-plt.subplot(1, 2, 2)
-plt.plot(epochs_range, loss, label='Training Loss')
-plt.plot(epochs_range, val_loss, label='Validation Loss')
-plt.legend(loc='upper right')
-plt.title('Training and Validation Loss')
-plt.show()
+    plt.show()
+
+plot_loss_acc(history, 20)
 
 model.save('kang.h5')

@@ -11,12 +11,12 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-groups_folder_path = 'D:/workingFolder/Tensor/cnn_sample/'
-categories = ["kang", "people"]
+groups_folder_path = 'C:/'
+categories = ["jmk", "ksh"]
 num_classes = len(categories)
 
-image_w = 180
-image_h = 180
+image_w = 300
+image_h = 300
 
 X = []
 Y = []
